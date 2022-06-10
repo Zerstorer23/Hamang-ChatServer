@@ -8,7 +8,7 @@ plugins {
 
 }
 
-group = "org.example"
+group = "hamang"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -19,6 +19,7 @@ dependencies {
     testImplementation(kotlin("test"))
     implementation("be.zvz:KotlinInside:1.14.5")
     implementation("org.fusesource.jansi:jansi:2.4.0")
+    implementation("ch.qos.logback:logback-classic:1.2.11")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
 
 
@@ -30,4 +31,12 @@ tasks.test {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
+}
+application {
+    mainClass.set("MainKt")
+}
+tasks.withType<Jar> {
+    manifest {
+        attributes["Main-Class"] = "hamang.Main"
+    }
 }
