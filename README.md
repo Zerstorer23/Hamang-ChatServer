@@ -15,3 +15,7 @@ pw=1111
 
 중계기나 게임 둘중 어느쪽을 먼저켜든 상관없음.
 6번함 웹게임의 경우 WebGame = 1 설정
+
+사용 API
+Eclipse WebSocket
+KotlinInside https://github.com/organization/KotlinInside
