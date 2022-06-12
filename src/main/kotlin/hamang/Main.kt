@@ -13,7 +13,7 @@ fun start() {
     val loginInfo = readCredential("setting.txt")
     ChatDriver.initialise(loginInfo)
     if (loginInfo.isWeb) {
-        startWebServer(loginInfo)
+        startWebServer()
     } else {
         startServer()
     }
@@ -31,9 +31,8 @@ private fun startServer() {
     }
 }
 
-private fun startWebServer(loginInfo: LoginInfo) {
+private fun startWebServer() {
     try {
-        ChatDriver.initialise(loginInfo)
         MyServer.startWebServer();
         ChatDriver.start()
     } catch (e: Exception) {
