@@ -1,0 +1,10 @@
+
+out/artifacts/ChatRelayKt_main_jar/실행.bat
+out/artifacts/ChatRelayKt_main_jar/setting.txt
+out/artifacts/ChatRelayKt_main_jar/ChatRelayKt.main.jar
+out/artifacts/ChatRelayKt_main_jar.zip
+/out/
+/build/
+/setting.txt
+/.gradle/
+/.idea/

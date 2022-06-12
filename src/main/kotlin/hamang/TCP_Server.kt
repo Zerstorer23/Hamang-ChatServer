@@ -5,10 +5,11 @@ import java.net.ServerSocket
 import java.net.Socket
 import kotlin.concurrent.thread
 
-class TCPServer(private val chatDriver: ChatDriver) {
+class TCPServer() {
     lateinit var thread: Thread
     private val port = 9917
     fun open() {
+        ServerSocket()
         val server = ServerSocket(port)
         println("Server is running on port ${server.localPort}")
         thread = thread {
@@ -16,13 +17,13 @@ class TCPServer(private val chatDriver: ChatDriver) {
                 val client = server.accept()
                 println("Client connected: ${client.inetAddress.hostAddress}")
                 // Run client in it's own thread.
-                thread { ClientHandler(client, chatDriver).run() }
+                thread { ClientHandler(client).run() }
             }
         }
     }
 }
 
-class ClientHandler(private val client: Socket, private val chatDriver: ChatDriver) {
+class ClientHandler(private val client: Socket) {
     private var inStream = DataInputStream(BufferedInputStream(client.getInputStream()))
     private var running: Boolean = false
     fun run() {
@@ -33,7 +34,7 @@ class ClientHandler(private val client: Socket, private val chatDriver: ChatDriv
                 val tokens = line.split("#")
                 if (tokens.size != 2) continue
                 println("Found " + tokens[1])
-                chatDriver.enqueueMessage(tokens[1])
+                ChatDriver.enqueueMessage(tokens[1])
             } catch (ex: Exception) {
                 ex.printStackTrace()
                 shutdown()

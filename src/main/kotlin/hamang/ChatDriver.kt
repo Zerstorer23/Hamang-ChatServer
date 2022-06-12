@@ -3,6 +3,7 @@ package hamang
 import hamang.Logins.LoginInfo
 import be.zvz.kotlininside.KotlinInside
 import be.zvz.kotlininside.api.article.ArticleList
+import be.zvz.kotlininside.api.article.ArticleWrite
 import be.zvz.kotlininside.api.async.article.AsyncArticleWrite
 import be.zvz.kotlininside.api.comment.CommentWrite
 import be.zvz.kotlininside.api.type.Article
@@ -14,10 +15,15 @@ import be.zvz.kotlininside.session.user.LoginUser
 import kotlinx.coroutines.*
 import java.util.*
 
-class ChatDriver(private val info: LoginInfo) {
+public object ChatDriver {
+    private lateinit var info: LoginInfo
+
+    const val GALLERY_NAME = "haruhiism"
     private val chatQueue: Queue<String> = LinkedList()
 
-    init {
+    @JvmStatic
+    fun initialise(login: LoginInfo) {
+        info = login;
         KotlinInside.createInstance(
             if (info.isAnonymous) {
                 Anonymous(info.id, info.password)
@@ -31,11 +37,12 @@ class ChatDriver(private val info: LoginInfo) {
         Thread.sleep(1000)
     }
 
+    @JvmStatic
     fun enqueueMessage(msg: String) {
         chatQueue.add(msg)
     }
 
-    private suspend fun writePost(title: String, content: String) :Boolean {
+    private suspend fun writePost(title: String, content: String): Boolean {
         println("글 작성: $title")
         val writeResult = AsyncArticleWrite(
             GALLERY_NAME,
@@ -54,28 +61,34 @@ class ChatDriver(private val info: LoginInfo) {
         }
         return writeResult.result;
     }
-    private suspend fun getFirstArticle(): ArticleList.GallList? {
+
+    private fun getFirstArticle(): ArticleList.GallList? {
         val articleList = ArticleList(GALLERY_NAME, 0)
         articleList.request()
         val gallList = articleList.getGallList() // 글 목록
-        var targetArticle :ArticleList.GallList? = null;
-        for(article in gallList){
-            if(article.subject[0] == '!'){
+        var targetArticle: ArticleList.GallList? = null;
+        for (article in gallList) {
+            if (article.subject[0] == '!') {
                 targetArticle = article;
                 break;
             }
         }
         return targetArticle;
     }
-    private suspend fun writeReply(content: String):Boolean{
+
+    private fun writeReply(content: String): Boolean {
         val target = getFirstArticle() ?: return false
         val commend = StringComment(content)
         println("글 찾음: ${target.identifier}")
         val writer = CommentWrite(
-            GALLERY_NAME, target.identifier, commend, KotlinInside.getInstance().session, KotlinInside.getInstance().auth.fcmToken
+            GALLERY_NAME,
+            target.identifier,
+            commend,
+            KotlinInside.getInstance().session,
+            KotlinInside.getInstance().auth.fcmToken
         )
         val result = writer.write().result
-        if(result)println("댓글로 대신작성")
+        if (result) println("댓글로 대신작성")
         return result
     }
 
@@ -85,6 +98,7 @@ class ChatDriver(private val info: LoginInfo) {
         delay(postDelay.toLong())
     }
 
+    @JvmStatic
     fun start() {
         CoroutineScope(Dispatchers.Default).launch {
             while (true) {
@@ -92,14 +106,16 @@ class ChatDriver(private val info: LoginInfo) {
                 if (chatQueue.size > 0) {
                     val (title, content) = getTitleAndContent()
                     async(Dispatchers.IO) {
-                       val res = writePost(title, content)
-                        if(!res) writeReply(title)
+                        val res = writePost(title, content)
+                        if (!res) writeReply(title)
                     }.start()
                     doSleep()
                 }
             }
         }
     }
+
+
 
     private fun getTitleAndContent(): Pair<String, String> {
         val firstMessage = "!${chatQueue.poll()}"
@@ -118,7 +134,4 @@ class ChatDriver(private val info: LoginInfo) {
         return Pair(title, content.toString())
     }
 
-    companion object {
-        const val GALLERY_NAME = "haruhiism"
-    }
 }
