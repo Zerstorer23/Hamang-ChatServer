@@ -131,6 +131,7 @@ public object ChatDriver {
                 }
             }
         }.toString()
+        content.append("\n게임참여: ${info.tagLink}")
         return Pair(title, content.toString())
     }
 

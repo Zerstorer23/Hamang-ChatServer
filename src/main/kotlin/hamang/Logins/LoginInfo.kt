@@ -5,5 +5,6 @@ data class LoginInfo(
     var isAnonymous: Boolean,
     var id: String,
     var password: String,
-    var delay: Int
+    var delay: Int,
+    var tagLink:String,
 );
