@@ -17,8 +17,6 @@ import java.util.*
 
 public object ChatDriver {
     private lateinit var info: LoginInfo
-
-    const val GALLERY_NAME = "haruhiism"
     private val chatQueue: Queue<String> = LinkedList()
 
     @JvmStatic
@@ -45,7 +43,7 @@ public object ChatDriver {
     private suspend fun writePost(title: String, content: String): Boolean {
         println("글 작성: $title")
         val writeResult = AsyncArticleWrite(
-            GALLERY_NAME,
+            info.gallId,
             Article(
                 title,
                 listOf(
@@ -63,7 +61,7 @@ public object ChatDriver {
     }
 
     private fun getFirstArticle(): ArticleList.GallList? {
-        val articleList = ArticleList(GALLERY_NAME, 0)
+        val articleList = ArticleList(info.gallId, 0)
         articleList.request()
         val gallList = articleList.getGallList() // 글 목록
         var targetArticle: ArticleList.GallList? = null;
@@ -81,7 +79,7 @@ public object ChatDriver {
         val commend = StringComment(content)
         println("글 찾음: ${target.identifier}")
         val writer = CommentWrite(
-            GALLERY_NAME,
+            info.gallId,
             target.identifier,
             commend,
             KotlinInside.getInstance().session,

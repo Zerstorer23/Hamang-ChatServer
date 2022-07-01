@@ -5,7 +5,7 @@ import java.io.FileNotFoundException
 
 object CredentialIO {
     public fun readCredential(filename: String) : LoginInfo {
-        val info = LoginInfo(isWeb = true, isAnonymous = false, id = "", password = "", delay = 15, tagLink = "")
+        val info = LoginInfo(isWeb = true, isAnonymous = false, id = "", password = "", delay = 15, tagLink = "", gallId = "")
         try {
             File(filename).bufferedReader().use { br ->
                 br.forEachLine {
@@ -18,13 +18,14 @@ object CredentialIO {
                             "pw" -> info.password = split[1]
                             "delay" -> info.delay = split[1].toInt()
                             "tag"->info.tagLink = split[1]
+                            "gall"->info.gallId=split[1]
                         }
                     }
                 }
             }
         } catch (e: FileNotFoundException) {
             println("{$filename} 파일이 없습니다. 직접 정보를 입력하세요.")
-            print("웹게임(하망6호) = 1, 유니티게임(4호) = 0 입력 > ")
+            print("웹게임 = 1, 유니티게임 = 0 입력 > ")
             info.isWeb = readln().toIntOrNull() != 0
             print("유동 닉네임 로그인 = 1, 반/고정 닉네임 로그인 = 0 입력 > ")
             info.isAnonymous = readln().toIntOrNull() != 0

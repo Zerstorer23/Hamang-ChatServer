@@ -7,4 +7,5 @@ data class LoginInfo(
     var password: String,
     var delay: Int,
     var tagLink:String,
+    var gallId:String,
 );
